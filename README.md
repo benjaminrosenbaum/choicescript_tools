@@ -12,7 +12,7 @@ For instance, say your primary stats for your new game, Choice of the Hipster, a
 You could run this command:
 
 ```sh
-./stat_code_gen.rb primary cynical snarky emo sparkly
+ruby stat_code_gen.rb primary cynical snarky emo sparkly
 ```
 
 And the program would respond with the following, which you can cut and paste into your ChoiceScript:
