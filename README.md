@@ -116,3 +116,12 @@ And the program would respond with the following, which you can cut and paste in
 ```
 
 You wouldn't want to write all that yourself, so it's nice to have the program do it.
+
+If, after doing the primary stats, you decide you want an additional set of stats for hipster enthusiasms, namely comics, craft_beers, indie_music and toast, you could run:
+
+```sh
+ruby stat_code_gen.rb enthusiasm comics craft_beers indie_music toast
+```
+
+...and get a separate stat function to figure out which of those are highest and lowest.
+
