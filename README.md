@@ -1,15 +1,41 @@
 # choicescript_tools
-Some helpful scripts for use with ChoiceScript
+Some helpful scripts for use with ChoiceScript.
+
+These tools require Ruby to be installed on your machine. You can run them from the command line ("shell" in Unix, "Terminal" on a Mac), usually from the directory where your .txt story files live.
+
+* unbalanced.rb - print a proofreading report of unmatched brackets, bare variables, and broken ellipses.
+* stat_code_gen.rb - generate ChoiceScript to find out the PC's best and worst stats at a given point in time.
+
+
+## unbalanced.rb
+
+Run this tool in the directory where your .txt files live.
+
+```sh
+ruby unbalanced.rb
+```
+
+It will show you some possible errors in your code:
+* places you have ".." (you probably want "..." or ".")
+* words with underscores in them that aren't inside ${} or @{} or in control statements like `\*if` or `\*goto`. These are probably variables you forgot to wrap. 
+* Unbalanced brackets, like ( or { or [. You might actually want this if you are starting a parenthesis on one line and ending it on another (for instance, if there are multiple ways the parenthetical expression could end, controlled by `\*if/\*else`.) This isn't that common, but if you want you can edit the .rb file and tell it what lines to ignore.
 
 ## stat_code_gen.rb
-
-This tool requires Ruby to be installed on your machine. You can run it from the command line ("shell" in Unix, "Terminal" on a Mac). 
 
 Run this tool to generate some ChoiceScript code to find out, at the point where you use it in your code, what the PC's highest and lowest stats of a particular kind are.
 
 For instance, say your primary stats for your new game, Choice of the Hipster, are: cynical, snarky, emo, and sparkly.
 
-You could run this command:
+You might want some character that your PC interacts with to react in some way that is based on their high stat. For instance:
+
+```
+  *gosub_scene startup set_high_and_low_primary
+
+  "Jehosephat!" says the beard-grooming salesperson, "that is certainly the most @{lowest_primary naive|overly earnest|complacent|unkempt} beard I have seen in all my career!"
+
+```
+
+To generate the code needed, you would run this command:
 
 ```sh
 ruby stat_code_gen.rb primary cynical snarky emo sparkly
