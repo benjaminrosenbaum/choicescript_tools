@@ -108,6 +108,7 @@ broken = `grep -n "\.\." spring-in-the-shtetl/*.txt | grep -v "\.\.\."`.split("\
 if (broken.length > 0)
 	puts "Found incomplete ellipses/doubled periods in the following lines: "
 	puts broken.join("\n")
+end 
 
 
 
