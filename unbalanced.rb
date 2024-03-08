@@ -18,23 +18,7 @@ PROJECT_PATH = ARGV[0] || './'
 
 # If you have lines that intentionally contain unbalanced parentheses, list them here, and they will be ignored. (This generally happens when some *if code splits a parenthetical phrase)
 $known = [
- 'you always feel a little odd about being counted among the required ten men',
- 'Perhaps these things are just projections of your mind. Maybe',
- 'that German philosopher',
- 'universe…who knows? Anyway…)',
- '(But of course, ${endearment}, it\'s only a dream.',
- 'perhaps that\'s not, in fact, just Ekaterina speaking?',
- 'His casual disdain, ${endearment}, in the face of everything',
- 'made it clear to the point of being somewhat thickheaded',
- 'Then again, given that you have the soul of a woman, maybe',
- 'because she had the soul of a man?)',
- 'shouldn\'t? It\'s confusing.)',
- 'real!)',
- 'real...are they?)',
- 'that controls her?)',
- 'also, somehow, Efrayim?)',
- 'full of bitterness; you have no words.)',
- 'I would never say that. But some might...)',
+ 'example line with unmatched bracket...)',
 ]
 
 def mismatch line, opener, closer
