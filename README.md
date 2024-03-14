@@ -26,7 +26,7 @@ Run this tool to generate some ChoiceScript code to find out, at the point where
 
 For instance, say your primary stats for your new game, Choice of the Hipster, are: cynical, snarky, emo, and sparkly.
 
-You might want some character that your PC interacts with to react in some way that is based on their high stat. For instance:
+You might want some character that your PC interacts with to react in some way that is based on their highest or lowest stat. For instance:
 
 ```
   *gosub_scene startup set_high_and_low_primary
