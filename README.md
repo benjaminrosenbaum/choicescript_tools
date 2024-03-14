@@ -17,8 +17,8 @@ ruby unbalanced.rb
 
 It will show you some possible errors in your code:
 * places you have ".." (you probably want "..." or ".")
-* words with underscores in them that aren't inside ${} or @{} or in control statements like `\*if` or `\*goto`. These are probably variables you forgot to wrap. 
-* Unbalanced brackets, like ( or { or [. You might actually want this if you are starting a parenthesis on one line and ending it on another (for instance, if there are multiple ways the parenthetical expression could end, controlled by `\*if/\*else`.) This isn't that common, but if you want you can edit the .rb file and tell it what lines to ignore.
+* words with underscores in them that aren't inside ${} or @{} or in control statements like `*if` or `*goto`. These are probably variables you forgot to wrap. 
+* Unbalanced brackets, like ( or { or [. You might actually want this if you are starting a parenthesis on one line and ending it on another (for instance, if there are multiple ways the parenthetical expression could end, controlled by `*if/*else`.) This isn't that common, but if you want you can edit the .rb file and tell it what lines to ignore.
 
 ## stat_code_gen.rb
 
@@ -31,7 +31,9 @@ You might want some character that your PC interacts with to react in some way t
 ```
   *gosub_scene startup set_high_and_low_primary
 
-  "Jehosephat!" says the beard-grooming salesperson, "that is certainly the most @{lowest_primary naive|overly earnest|complacent|unkempt} beard I have seen in all my career!"
+  "Jehosephat!" says the beard-grooming salesperson, "that is certainly the
+   most @{lowest_primary naive|overly earnest|complacent|unkempt} beard I
+   have seen in all my career!"
 
 ```
 
