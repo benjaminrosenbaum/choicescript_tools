@@ -151,5 +151,5 @@ If, after doing the primary stats, you decide you want an additional set of stat
 ruby stat_code_gen.rb enthusiasm comics craft_beers indie_music toast
 ```
 
-...and get a separate stat function to figure out which of those are highest and lowest.
+...and get a separate stat function to figure out which of those are highest and lowest. (You might have to rename the function and the `lowest_` and `highest_` variables so they don't conflict with the first one.)
 
