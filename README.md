@@ -4,6 +4,7 @@ Some helpful scripts for use with ChoiceScript.
 These tools require Ruby to be installed on your machine. You can run them from the command line ("shell" in Unix, "Terminal" on a Mac), usually from the directory where your .txt story files live.
 
 * unbalanced.rb - print a proofreading report of unmatched brackets, bare variables, and broken ellipses.
+* playthroughs.rb - run multiple randomtests, capturing the output and buildiung a file of stats which you can parse to find interesting examples of playthroughs to read from start to finish.
 * stat_code_gen.rb - generate ChoiceScript to find out the PC's best and worst stats at a given point in time.
 
 
@@ -19,6 +20,22 @@ It will show you some possible errors in your code:
 * places you have ".." (you probably want "..." or ".")
 * words with underscores in them that aren't inside ${} or @{} or in control statements like `\*if` or `\*goto`. These are probably variables you forgot to wrap. 
 * Unbalanced brackets, like ( or { or [. You might actually want this if you are starting a parenthesis on one line and ending it on another (for instance, if there are multiple ways the parenthetical expression could end, controlled by `\*if/\*else`.) This isn't that common, but if you want you can edit the .rb file and tell it what lines to ignore.
+
+## playthroughs.rb
+
+First, modify the file to point at your own development and choicescript directories.
+
+Then run `./playthroughs.rb --gen`
+
+This will output some Choicescript code: a variable you must add to startup.txt, and two `fake_choice`s which capture all the numeric variables you define in your startup.txt file. Copy these into your game, at the end of the last chapter.
+
+Then you can run `./playthroughs.rb`
+
+This will create a directory called `dump` containing 50000 full-text playthroughs of your game, and a CSV file called live_stats.csv which lists the stats for each of those playthroughs.
+
+Here's how you use this. Let's say you have an enumerated variable called "what_you_promised_the_king" and another enumerated variable called "magic_power", and you want to see what a game would look like in the rare case that the first variable was 4 (meaning that you promised the king you'd investigate the matter of the missing orchid) and the second variable is 6 (meaning you know how to walk through walls). 
+
+You could open the CSV file in a spreadsheet, filter on those values, look for an interesting playthrough based on the other values in the row... and then scroll to the rightmost column, which has the local URL of the file for that playthrough.
 
 ## stat_code_gen.rb
 
