@@ -18,8 +18,8 @@ ruby unbalanced.rb
 
 It will show you some possible errors in your code:
 * places you have ".." (you probably want "..." or ".")
-* words with underscores in them that aren't inside ${} or @{} or in control statements like `\*if` or `\*goto`. These are probably variables you forgot to wrap. 
-* Unbalanced brackets, like ( or { or [. You might actually want this if you are starting a parenthesis on one line and ending it on another (for instance, if there are multiple ways the parenthetical expression could end, controlled by `\*if/\*else`.) This isn't that common, but if you want you can edit the .rb file and tell it what lines to ignore.
+* words with underscores in them that aren't inside ${} or @{} or in control statements like `*if` or `*goto`. These are probably variables you forgot to wrap. 
+* Unbalanced brackets, like ( or { or [. You might actually want this if you are starting a parenthesis on one line and ending it on another (for instance, if there are multiple ways the parenthetical expression could end, controlled by `*if/*else`.) This isn't that common, but if you want you can edit the .rb file and tell it what lines to ignore.
 
 ## playthroughs.rb
 
@@ -43,12 +43,14 @@ Run this tool to generate some ChoiceScript code to find out, at the point where
 
 For instance, say your primary stats for your new game, Choice of the Hipster, are: cynical, snarky, emo, and sparkly.
 
-You might want some character that your PC interacts with to react in some way that is based on their high stat. For instance:
+You might want some character that your PC interacts with to react in some way that is based on their highest or lowest stat. For instance:
 
 ```
   *gosub_scene startup set_high_and_low_primary
 
-  "Jehosephat!" says the beard-grooming salesperson, "that is certainly the most @{lowest_primary naive|overly earnest|complacent|unkempt} beard I have seen in all my career!"
+  "Jehosephat!" says the beard-grooming salesperson, "that is certainly the
+   most @{lowest_primary naive|overly earnest|complacent|unkempt} beard I
+   have seen in all my career!"
 
 ```
 
@@ -166,5 +168,5 @@ If, after doing the primary stats, you decide you want an additional set of stat
 ruby stat_code_gen.rb enthusiasm comics craft_beers indie_music toast
 ```
 
-...and get a separate stat function to figure out which of those are highest and lowest.
+...and get a separate stat function to figure out which of those are highest and lowest. (The function would be called `set_high_and_low_enthusiasm` and the variables `lowest_enthusiasm`, `lowest_enthusiasm_name`, etc.)
 
