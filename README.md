@@ -8,6 +8,56 @@ These tools require Ruby to be installed on your machine. You can run them from 
 * stat_code_gen.rb - generate ChoiceScript to find out the PC's best and worst stats at a given point in time.
 
 
+## likely.rb
+
+Run this tool, after doing a randomtest.js run with showCoverage=true and getting a randomtest-output.txt file, when your current directory is the directory with that file in it.
+
+It will allow you to get various output about your enumerated variables, such as listings:
+
+```
+   % ./likely.rb efrayim_memory
+   efrayim_memory values by likelihood:
+     1 -  childhood stories: 10017.0(20.03%)
+     2 -  rage in the tavern: 10003.0(20.01%)
+     3 -  his argument with Menakhem: 9932.0(19.86%)
+     4 -  him lurking in the woods: 9989.0(19.98%)
+     5 -  him wandering the alleys: 10059.0(20.12%)
+   -----------
+    sum: 100.0%
+   
+```
+
+...multiselect templates:
+
+```
+    % ./likely.rb -m efrayim_memory
+    @{efrayim_memory childhood stories(20.03%)|rage in the tavern(20.01%)|his argument with Menakhem(  19.86%)|him lurking in the woods(19.98%)|him wandering the alleys(20.12%)}
+```
+
+...and if blocks:
+
+```
+    % ./likely.rb --if efrayim_memory
+    efrayim_memory values by likelihood:
+    *if (efrayim_memory = 1)
+        *comment 1: childhood stories (20.03%)
+        TODO
+    *elseif (efrayim_memory = 2)
+        *comment 2: rage in the tavern (20.01%)
+        TODO
+    *elseif (efrayim_memory = 3)
+        *comment 3: his argument with Menakhem (19.86%)
+        TODO
+    *elseif (efrayim_memory = 4)
+        *comment 4: him lurking in the woods (19.98%)
+        TODO
+    *elseif (efrayim_memory = 5)
+        *comment 5: him wandering the alleys (20.12%)
+        TODO
+    *else
+        *bug "invalid efrayim_memory=${efrayim_memory}"
+```
+
 ## unbalanced.rb
 
 Run this tool in the directory where your .txt files live.
@@ -23,7 +73,13 @@ It will show you some possible errors in your code:
 
 ## playthroughs.rb
 
-First, modify the file to point at your own development and choicescript directories.
+This allows you to collect data on multiple randomtest playthroughs, find interesting variations, and then read the entire playthrough for that case.
+
+(Warning: it can take a very long time to go through the default 50000 runs, and potentially take up a vast amount of space on your hard disk. For a complex game, you might want to let it run overnight.)
+
+To use:
+
+First, modify this script file to point at your own development and choicescript directories.
 
 Then run `./playthroughs.rb --gen`
 
@@ -33,7 +89,7 @@ Then you can run `./playthroughs.rb`
 
 This will create a directory called `dump` containing 50000 full-text playthroughs of your game, and a CSV file called live_stats.csv which lists the stats for each of those playthroughs.
 
-Here's how you use this. Let's say you have an enumerated variable called "what_you_promised_the_king" and another enumerated variable called "magic_power", and you want to see what a game would look like in the rare case that the first variable was 4 (meaning that you promised the king you'd investigate the matter of the missing orchid) and the second variable is 6 (meaning you know how to walk through walls). 
+**Example of use.** Let's say you have an enumerated variable called "what_you_promised_the_king" and another enumerated variable called "magic_power", and you want to see what a game would look like in the rare case that the first variable was 4 (meaning that you promised the king you'd investigate the matter of the missing orchid) and the second variable is 6 (meaning you know how to walk through walls). 
 
 You could open the CSV file in a spreadsheet, filter on those values, look for an interesting playthrough based on the other values in the row... and then scroll to the rightmost column, which has the local URL of the file for that playthrough.
 
