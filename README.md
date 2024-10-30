@@ -6,6 +6,7 @@ These tools require Ruby to be installed on your machine. You can run them from 
 * unbalanced.rb - print a proofreading report of unmatched brackets, bare variables, and broken ellipses.
 * playthroughs.rb - run multiple randomtests, capturing the output and buildiung a file of stats which you can parse to find interesting examples of playthroughs to read from start to finish.
 * stat_code_gen.rb - generate ChoiceScript to find out the PC's best and worst stats at a given point in time.
+* gr.sh - grep a large section of your code and call out the matching line
 
 
 ## likely.rb
@@ -226,3 +227,33 @@ ruby stat_code_gen.rb enthusiasm comics craft_beers indie_music toast
 
 ...and get a separate stat function to figure out which of those are highest and lowest. (The function would be called `set_high_and_low_enthusiasm` and the variables `lowest_enthusiasm`, `lowest_enthusiasm_name`, etc.)
 
+## gr.rb
+
+This allows you search for a phrase in your code and see many lines of context before and after each occurrence, but puts the searched phrases in all caps with ####'s around them, so 
+you can easily find where they are.
+
+You should add this function (or an equivalent) to your shell (e.g. in ~/.zshrc) if you want to wrap it in easy "more"-style pagination:
+
+```
+ gr() { 
+   clear; ./gr.rb "$1" $2 | more 
+ }
+
+```
+
+Then you can do 
+
+```
+ gr "very serious matters" 3
+```
+
+and get output like
+```
+spring-in-the-shtetl/03b_faigeleh_dovid.txt-5383-        *elseif (highest_primary = deep_index)
+spring-in-the-shtetl/03b_faigeleh_dovid.txt-5384-            His eyes go wide as saucers, and he teeters this way and that, staring up at the clouds with an entranced expression and playing with a curl of his hair. "Hmm, hmm," he burbles. "Now where did I put my shoes?" 
+spring-in-the-shtetl/03b_faigeleh_dovid.txt-5385-        *elseif (highest_primary = learned_index)
+spring-in-the-shtetl/03b_faigeleh_dovid.txt:5386:            He puffs his chest out importantly and strokes his beard, frowning seriously and striding to and fro with his other hand in his pocket. "Hmm, hmm, I have #### VERY SERIOUS MATTERS #### to consider," he says. "I am deliberating whether @{yiddish_level the Rambam|the Rambam|Maimonides} or Rashi was correct on the matter of a bumblebee's @{yiddish_level pupik|pupik, or as the goyim are wont to say, its belly button|belly button}."
+spring-in-the-shtetl/03b_faigeleh_dovid.txt-5387-     
+spring-in-the-shtetl/03b_faigeleh_dovid.txt-5388-        *if (barn_mood = 5)
+spring-in-the-shtetl/03b_faigeleh_dovid.txt-5389-            You stick your tongue out at him.
+```
