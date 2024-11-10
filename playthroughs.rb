@@ -9,21 +9,35 @@
 # should insert near the end of your game to capture the values of each
 # playthrough.
 
-# Constants - Override these variables!
-# we assume you are developing in one directory and then copying
+# Instructions: Override these variables: DEVDIR, CSDIR, PROJNAME
+# DEVDIR and CSDIR can be absoulte paths, or paths relative to your home directory 
+# using "~" to represent that directory.
+#
+# You can either set the CST_DEVDIR, CST_CSDIR, and CST_PROJNAME environment variables 
+# in your shell, like this:
+#    export CST_DEVDIR="/Developer/gamedev/myproj"
+# ...or you can modify this file to change the defaults.
+# We assume you are developing in one directory and then copying
 # your files to the standard github choicescript project for compilation
 # set DEVDIR to wherever your project is, PROJNAME the name of the directory 
 # within that directory that contains your ".txt" files, and CSDIR to your local copy
 # of choicescript
-DEVDIR = "/Developer/bitbucket/cog"
-CSDIR = "/Developer/github/choicescript"
-PROJNAME = "spring-in-the-shtetl"
+#
+# The graph output will be placed in DEVDIR/PROJNAME/maps/PROJNAME.png
+#
+def get_path envvar, default_path
+	(ENV[envvar] || default_path).gsub(/~/, `cd ; pwd`.chomp)
+end
 
-HOME = `cd ; pwd`.chomp
+DEVDIR = get_path 'CST_DEVDIR', "/Developer/bitbucket/cog"
+CSDIR = get_path 'CST_CSDIR', "/Developer/github/choicescript"
+PROJNAME = ENV['CST_PROJNAME'] || "spring-in-the-shtetl"
+
+
 
 if (["-h", "--help"].include? ARGV[0])
 	puts """
-	Usgage: playthroughs.rb --gen
+	Usage: playthroughs.rb --gen
 	           outputs code to insert into choicescript to capture values of each playthrough
 	        playthroughs.rb --range MIN_MAX [dump-dir [stats-file]]
 	           runs the specific playthroughs in the given range, overwrites their files in 
@@ -32,12 +46,15 @@ if (["-h", "--help"].include? ARGV[0])
 	           runs all playthroughs up through MAX, overwrites all files in 
 	           the dump-dir, and (unless resuming) creates a new <stats-file>.csv 
 
+	Make sure the CST_DEVDIR, CST_DEVDIR, and CST_PROJNAME environment variables are set up correctly
+	or that you've edited this .rb file to point to your code.
+
 	"""
 	exit 0
 end
 
 if (ARGV[0] == "-g") || (ARGV[0] == "--gen")
-	STARTUP = "#{HOME}#{DEVDIR}/#{PROJNAME}/startup.txt"
+	STARTUP = "#{DEVDIR}/#{PROJNAME}/startup.txt"
 	cmd = "grep -E '^.create (.*?) (\\d+)' #{STARTUP} | cut -d ' ' -f 2"
 	vars = `#{cmd}`.chomp.split("\n")
 	if vars.length < 1
@@ -98,9 +115,9 @@ else
  	puts "Using default range #{range}; for a custom range use \"--range <X>-<Y>\" (this will not overwrite the stats file)"
 end
 
-#STATS = "#{HOME}#{DEVDIR}/stats.csv"
-DUMP = "#{HOME}#{DEVDIR}/#{ARGV[0] || "dump"}"
-LIVESTATS = "#{HOME}#{DEVDIR}/#{ARGV[1] || "live_stats"}.csv"
+
+DUMP = "#{DEVDIR}/#{ARGV[0] || "dump"}"
+LIVESTATS = "#{DEVDIR}/#{ARGV[1] || "live_stats"}.csv"
 FAIL = "#{DUMP}/failures.html"
 TMP = "#{DUMP}/tmp.csv"
 TMP2 = "#{DUMP}/tmp2.csv"
@@ -135,13 +152,13 @@ sed_cmds = "#{sed_ensure "do_gather_stats", true} ; #{sed_ensure "debug_jump", f
 		   "#{sed_ensure "override_true_name_for_test", true} ; " + 
            "#{sed_ensure "*create verbose_stats", true} ; #{sed_comment_out "\*sm_init mygame"} ;"
 
-sed_run = "sed -I .bak '#{sed_cmds}' #{HOME}#{CSDIR}/web/mygame/scenes/startup.txt"
+sed_run = "sed -I .bak '#{sed_cmds}' #{CSDIR}/web/mygame/scenes/startup.txt"
 
 puts "running #{sed_run}"
 `#{sed_run}`
 
 OPTS = "showText=true showChoices=true avoidUsedOptions=true"
-RT = "cd #{HOME}#{CSDIR} ; node randomtest.js" 
+RT = "cd #{CSDIR} ; node randomtest.js" 
 
 prev = Time.now
 orig = prev
