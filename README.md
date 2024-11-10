@@ -313,7 +313,7 @@ ruby stat_code_gen.rb enthusiasm comics craft_beers indie_music toast
 
 ## gr.rb
 
-This allows you search for a phrase in your code and see many lines of context before and after each occurrence, but puts the searched phrases in all caps with ####'s around them, so 
+This ChoiceScript-optimized variant of `grep` allows you search for a phrase in your code and see many lines of context before and after each occurrence, but puts the searched phrases in all caps with ####'s around them, so 
 you can easily find where they are.
 
 You should add this function (or an equivalent) to your shell (e.g. in ~/.zshrc) if you want to wrap it in easy "more"-style pagination:
