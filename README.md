@@ -13,7 +13,15 @@ These tools require Ruby to be installed on your machine. You can run them from 
 
 ## likely.rb
 
-Run this tool, after doing a randomtest.js run with showCoverage=true and getting a randomtest-output.txt file, when your current directory is the directory with that file in it.
+To use this tool, annotate your code with comments that list the allowed states of your 
+enumerated variables, like this:
+
+```
+    *comment efrayim_memory: 1 is childhood stories,2 is rage in the tavern, 3 is his argument with Menakhem, 4 is him lurking in the woods, 5 is him wandering the alleys
+    *create efrayim_memory 1
+```
+
+Then do a `randomtest.js` run with `showCoverage=true` to produce a `randomtest-output.txt` file. Make sure that when you run the tool, your current directory is the directory with that file in it.
 
 It will allow you to get various output about your enumerated variables, such as listings:
 
