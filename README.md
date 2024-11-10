@@ -155,7 +155,7 @@ To use:
             # Do something entirely different
               *goto choice_finished
 
-    *comment | choice_not_yet_started TODO
+      *comment | choice_not_yet_started TODO
       *label choice_not_yet_started
       haven't gotten to this yet... 
 
