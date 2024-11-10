@@ -3,8 +3,10 @@ Some helpful scripts for use with ChoiceScript.
 
 These tools require Ruby to be installed on your machine. You can run them from the command line ("shell" in Unix, "Terminal" on a Mac), usually from the directory where your .txt story files live.
 
+* likely.rb - show useful information about enumerated variables
 * unbalanced.rb - print a proofreading report of unmatched brackets, bare variables, and broken ellipses.
 * playthroughs.rb - run multiple randomtests, capturing the output and buildiung a file of stats which you can parse to find interesting examples of playthroughs to read from start to finish.
+* flowchart.rb - use Graphviz to display a flowchart of your story's paths
 * stat_code_gen.rb - generate ChoiceScript to find out the PC's best and worst stats at a given point in time.
 * gr.sh - grep a large section of your code and call out the matching line
 
@@ -93,6 +95,80 @@ This will create a directory called `dump` containing 50000 full-text playthroug
 **Example of use.** Let's say you have an enumerated variable called "what_you_promised_the_king" and another enumerated variable called "magic_power", and you want to see what a game would look like in the rare case that the first variable was 4 (meaning that you promised the king you'd investigate the matter of the missing orchid) and the second variable is 6 (meaning you know how to walk through walls). 
 
 You could open the CSV file in a spreadsheet, filter on those values, look for an interesting playthrough based on the other values in the row... and then scroll to the rightmost column, which has the local URL of the file for that playthrough.
+
+## flowchart.rb
+
+This tool rwquires you to have the graphViz \"dot\" utility installed. See https://graphviz.org
+
+It generates a flowchart of your story's paths, based on annotations you add to your code.
+
+To use:
+
+1. Make sure [GraphViz is installed](https://graphviz.org)
+
+2. In your ChoiceScript code, add comments prefixed with a pipe character "|".
+
+   This shows a significant transition (e.g. a `*goto` or `*gosub`) between 
+   `thing_one` and `thing_two`:
+
+   ```
+      *comment | thing_one -> thing_two
+   ```
+
+   This shows that `thing_three` is under development but not finished:
+
+   ```
+      *comment | thing_three DOING
+   ```
+
+   You can also annotate particular transitions with additional information, like this:
+   ```
+      *comment | fight_the_dragon -> victory[label="if you win"]
+   ```
+   
+   Typically you'll want to add these comments right before significant labels in your code.
+
+   You don't need to annotate every transition, just ones that will be useful for
+   understanding the structure of your code. (You can also use words that aren't
+   actually labels in your code, but just help you visualize the flow.)
+
+   Example:
+   ```
+
+      *comment | finished_func -> choice_being_worked_on
+      *comment | finished_func -> choice_not_yet_started
+      *comment | finished_func -> choice_finished
+      *label finished_func
+        *choice 
+          # Do a thing.
+            *goto choice_not_yet_started
+              # Do a different thing.
+            *goto choice_being_worked_on
+            # Do something entirely different
+              *goto choice_finished
+
+    *comment | choice_not_yet_started TODO
+      *label choice_not_yet_started
+      haven't gotten to this yet... 
+
+      *comment | choice_being_worked_on DOING
+      *label choice_being_worked_on
+      work in progress... 
+
+      *label choice_finished
+      Wow, that's different!  
+   ```
+
+3.  Set up the CST_DEVDIR environment variable to point to your development directory, and 
+place your .txt files in a project directory within that directory.
+
+4. From the command line, run:
+```
+  ./flowchart.rb PROJNAME
+```
+...where PROJNAME is the name of the project directory containing your .txt files.
+
+5. This will create the flowchart as a .png file in a `maps` directory inside your development directory, and display it.
 
 ## stat_code_gen.rb
 
