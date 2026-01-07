@@ -1,13 +1,11 @@
 #! /usr/bin/env ruby
 
 if (ARGV.size == 0) or (ARGV.include? "--help")
-	puts "Usage: likely [--if | --if2] [--multiselect, -m] [--html] [--partition, --p <partition_val>] <stat> [<runs>]"
+	puts "Usage: likely [--if | --if2] [--multiselect, -m] [--html] [--partition, --p <partition_val>] [-f, --input-file FILE] <stat> [<runs>]"
 	puts "       --if, --multiselect, and --html are alternative ways of displaying information"
 	puts "       --if2 is like --if but ignores value=1, which is usally a 'not yet calculated' state"
 	puts "       --partition aggregates the ranges above and below the partition_val"
-	puts """       
-				   Run this script when you are in the directory that holds test.coverage.
-
+	puts """      
 				   likely.rb hunts through your code for lines of the form:
 				   *comment [variable name]: 1 is [defintion], 2 is [defintion], 3 is [defintion]...
 
@@ -22,9 +20,11 @@ if (ARGV.size == 0) or (ARGV.include? "--help")
 				   what the values are, and to see a rough estimate of their probabilities in randomtest
 				   playthroughs.
 
-				   If there is a test.coverage file in the current directory, likely.rb will draw 
-	               probabilities from it. Note that these probabilities are inaccurate if the value
-	               is reset multiple times in a single playthrough, so this works best for variables
+				   You can specify the file which was output by randomtest (including frequencies of how often
+				   a line was encountered) with the -f parameter; otherwise, likely.rb will look for 
+				   a file named randomtest-output.txt in the current directory. If it has such an input file, 
+				   likely.rb will draw probabilities from it. Note that these probabilities are inaccurate if the 
+				   value is reset multiple times in a single playthrough, so this works best for variables
 	               that are set a single time.
 
                    The default 'runs' are 50000, what randomtest.js usually uses, but you can override
@@ -62,15 +62,31 @@ if ((ARGV[0] == "--partition") || (ARGV[0] == "-p"))
 	$partition_val = ARGV.shift.to_i
 end
 
+$input_file = 'randomtest-output.txt'
+if ['-f', '--input-file'].include? ARGV[0]
+	ARGV.shift
+	$input_file = ARGV.shift
+	unless File.exists? $input_file
+		puts "Input file #{$input_file} not found."
+		exit 1
+	end
+end
+
 filter_defs = ""
 
 stat = ARGV[0]
+
+unless stat && stat != ""
+	puts "No stat specified"
+    exit 1
+end
+
 
 runs = (ARGV.size > 1) ? ARGV[1].to_i : 50000
 
 
 def get_stat_def stat
-	definition = `grep "comment #{stat}:" randomtest-output.txt | tail -1`.chomp
+	definition = `grep "comment #{stat}:" #{$input_file} | tail -1`.chomp
 
 	def_parts = definition.split(':', 3)
 
@@ -87,7 +103,7 @@ end
 #puts defs
 
 def get_lines stat
-	result = `grep "set #{stat}" randomtest-output.txt`.lines 
+	result = `grep "set #{stat}" #{$input_file}`.lines 
 	result
 end
 

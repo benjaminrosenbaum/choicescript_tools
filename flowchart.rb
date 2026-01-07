@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 
-# graph.rb -- draws a graph of your story's paths, based on annotations, using graphViz
+# flowchart.rb -- draws a graph of your story's paths, based on annotations, using graphViz
 
 # Instructions: Override these variables: DEVDIR, PROJNAME
 # DEVDIR can be an absoulte path, or a paths relative to your home directory 
@@ -20,12 +20,13 @@
 
 if (["-h", "--help"].include? ARGV[0])
 	puts """
-	Usage: graph.rb [projname]
+	Usage: flowchart.rb [projname]
 
-	    Draws a graph of your story's paths, based on annotations, using graphViz.js
+	    Draws a flowchart of your story's paths, based on annotations, using graphViz
 
-	    Set up the CST_DEVDIR environment variables to point to your development
-	    directory, and place your .txt files in a PROJNAME directory within it.
+	    Set up the CST_DEVDIR and CST_PROJNAME environment variables: CST_DEVDIR to point 
+	    to your development directory, with your .txt files in a CST_PROJNAME directory 
+	    within it. (You can also set the PROJNAME with the first command-line argument.)
 
 	    You must have the graphViz \"dot\" utility installed. See https://graphviz.org
 
@@ -46,7 +47,7 @@ if (["-h", "--help"].include? ARGV[0])
 	    	    # Do something entirely different
 	    	    	*goto choice_finished
 
-		*comment | choice_not_yet_started TODO
+		  *comment | choice_not_yet_started TODO
 	    *label choice_not_yet_started
 	    haven't gotten to this yet... 
 
@@ -56,6 +57,9 @@ if (["-h", "--help"].include? ARGV[0])
 
 	    *label choice_finished
 	    Wow, that's different!  
+
+
+	    The graph output will be placed in CST_DEVDIR/CST_PROJNAME/maps/CST_PROJNAME.png
 
 	"""
 	exit 0
