@@ -1,0 +1,8 @@
+*label _begin
+
+*set foo 3
+*set bar foo + 2
+
+Hello, world
+
+end

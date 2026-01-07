@@ -3,7 +3,7 @@ class Declaration
 	attr_reader :chapbook_expression
 
 	def initialize(chapbook_expression, verbose = false)
-		@chapbook_expression = "#{chapbook_expression} " #add a trailing space to make life easier
+		@chapbook_expression = chapbook_expression
 		@verbose = verbose
 	end
 

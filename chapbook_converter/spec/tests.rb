@@ -1,5 +1,6 @@
 require './lib/clause'
 require './lib/declaration'
+require './lib/passage'
 
 RSpec.configure do |config|
   config.color = true
@@ -128,4 +129,35 @@ RSpec.describe 'Declaration' do
       expect(Declaration.new(chpbk).to_choicescript).to eq(chsrpt)
     end
   end
+end
+
+RSpec.describe 'Passage' do 
+
+  before do
+    @chpbk_passage = "foo: 3"       + "\n" +
+                     "bar: foo + 2" + "\n" +
+                     "--"           + "\n" +
+                     "Hello, world" 
+
+    @chsrpt_passage = "*set foo 3"       + "\n" +
+                      "*set bar foo + 2" + "\n" + "\n" +
+                      "Hello, world" 
+  end 
+
+  describe 'conversion' do
+
+    it 'can partition the chapbook passage into header and body' do
+      (header, body) = Passage.new(@chpbk_passage).partitioned
+
+      expect(header.length).to eq(2)
+      expect(header[0]).to eq("foo: 3" )
+      expect(body.length).to eq(1)
+      expect(body[0]).to eq("Hello, world")
+    end
+
+    it 'can format a simple Chapbook passage as a Choicescript block' do 
+      expect(Passage.new(@chpbk_passage).to_choicescript).to eq(@chsrpt_passage)
+    end
+  end
+
 end

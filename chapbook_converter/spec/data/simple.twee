@@ -1,0 +1,20 @@
+:: StoryTitle
+Simple
+
+
+:: StoryData
+{
+  "ifid": "E0DCAAD5-2693-4030-ABB4-4A031328EFDA",
+  "format": "Chapbook",
+  "format-version": "2.3.0",
+  "start": "Cover",
+  "zoom": 1
+}
+
+
+:: Begin {"position":"825,25","size":"100,100"}
+
+foo: 3
+bar: foo + 2
+--
+Hello, world
