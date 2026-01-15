@@ -137,11 +137,11 @@ RSpec.describe 'Passage' do
     @chpbk_passage = "foo: 3"       + "\n" +
                      "bar: foo + 2" + "\n" +
                      "--"           + "\n" +
-                     "Hello, world" 
+                     "Hello, {bar} worlds" 
 
     @chsrpt_passage = "*set foo 3"       + "\n" +
                       "*set bar foo + 2" + "\n" + "\n" +
-                      "Hello, world" 
+                      "Hello, ${bar} worlds" 
   end 
 
   describe 'conversion' do
@@ -152,7 +152,7 @@ RSpec.describe 'Passage' do
       expect(header.length).to eq(2)
       expect(header[0]).to eq("foo: 3" )
       expect(body.length).to eq(1)
-      expect(body[0]).to eq("Hello, world")
+      expect(body[0]).to eq("Hello, {bar} worlds")
     end
 
     it 'can format a simple Chapbook passage as a Choicescript block' do 

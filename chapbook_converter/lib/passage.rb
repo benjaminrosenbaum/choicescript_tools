@@ -18,7 +18,11 @@ class Passage
 	end
 
 	def convert_body_line chapbook_body_line
-		chapbook_body_line
+		chapbook_body_line.split(/\s/).map do |w|
+			# replace simple variables
+			rgx = /\{([^ \}]+)\}/
+			(rgx.match w) ? w.gsub(rgx, "${#{$1}}" ) : w
+		end.join(' ')
 	end
 
 	def partitioned

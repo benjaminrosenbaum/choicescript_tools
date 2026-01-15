@@ -7,7 +7,7 @@ Simple
   "ifid": "E0DCAAD5-2693-4030-ABB4-4A031328EFDA",
   "format": "Chapbook",
   "format-version": "2.3.0",
-  "start": "Cover",
+  "start": "Begin",
   "zoom": 1
 }
 
@@ -18,3 +18,25 @@ foo: 3
 bar: foo + 2
 --
 Hello, world
+
+> [[be brave->Happy End]]
+> [[be cowardly->Sad End!?]]
+
+:: Happy End {"position":"825,50","size":"100,100"}
+
+Well isn't this nice.
+
+:: Sad End!? {"position":"825,50","size":"100,100"}
+
+Not as nice. You are eaten by {bar} grues.
+
+:: Invalid
+
+This will be invalid
+
+> [[Happy End]]
+> [[Sad End]]
+> [[Begin]]
+
+See, it has a [[link->Sad End]] after the choices, so it's invalid.
+
