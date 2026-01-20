@@ -14,7 +14,14 @@ class Passage
 		cs_header = header.map {|decl| Declaration.new(decl).to_choicescript }
 		cs_body = body.map{|b| convert_body_line b}
 
-		(cs_header + [""] + cs_body).join("\n")
+		results = (cs_header + [""] + cs_body).join("\n").strip.split("\n")
+		if results[-1] =~ /\[\[(.*)->(.*)\]\]/
+			results.pop 
+			results.push "*page_break #{$1}"
+			results.push "*goto #{lablify $2}"
+		end
+
+		results.join("\n")
 	end
 
 	def convert_body_line chapbook_body_line
@@ -45,5 +52,9 @@ class Passage
 		end
 		partitioned
 	end
+
+	def lablify text
+		text.downcase.gsub(/\W+/, '_')
+    end
 
 end

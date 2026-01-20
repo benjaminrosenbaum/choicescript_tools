@@ -142,6 +142,15 @@ RSpec.describe 'Passage' do
     @chsrpt_passage = "*set foo 3"       + "\n" +
                       "*set bar foo + 2" + "\n" + "\n" +
                       "Hello, ${bar} worlds" 
+
+    @chpbk_passage_simple_exit = @chpbk_passage               + "\n" +
+                                 "[[That's It!->Page 2]] \n "+ "\n" 
+
+    @chsrpt_passage_simple_exit = @chsrpt_passage         + "\n" +
+                                  "*page_break That's It!" + "\n" +
+                                  "*goto page_2"  
+
+
   end 
 
   describe 'conversion' do
@@ -157,6 +166,10 @@ RSpec.describe 'Passage' do
 
     it 'can format a simple Chapbook passage as a Choicescript block' do 
       expect(Passage.new(@chpbk_passage).to_choicescript).to eq(@chsrpt_passage)
+    end
+
+    it 'can format a chapbook passage with a simple exit as a Choicescript block' do 
+      expect(Passage.new(@chpbk_passage_simple_exit).to_choicescript).to eq(@chsrpt_passage_simple_exit)
     end
   end
 
