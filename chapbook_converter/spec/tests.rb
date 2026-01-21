@@ -1,6 +1,9 @@
-require './lib/clause'
-require './lib/declaration'
-require './lib/passage'
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'clause'
+require 'declaration'
+require 'passage'
+require 'story'
 
 RSpec.configure do |config|
   config.color = true
@@ -148,7 +151,7 @@ RSpec.describe 'Passage' do
 
     @chsrpt_passage_simple_exit = @chsrpt_passage         + "\n" +
                                   "*page_break That's It!" + "\n" +
-                                  "*goto page_2"  
+                                  "*goto _page_2"  
 
 
   end 
@@ -172,5 +175,38 @@ RSpec.describe 'Passage' do
       expect(Passage.new(@chpbk_passage_simple_exit).to_choicescript).to eq(@chsrpt_passage_simple_exit)
     end
   end
+end
 
+
+RSpec.describe 'Chunk' do 
+  before do
+    @opening = ":: Sad End!? {\"position\":\"825,50\",\"size\":\"100,100\"}"
+    @line = "Not as nice. You are eaten by {bar} grues."
+
+    @choicescript = "\n*label _sad_end_\n*if collapsible\n  Not as nice. You are eaten by ${bar} grues.\n*comment end of _sad_end_"
+  end 
+
+  describe 'conversion' do
+    it 'can turn a chunk of twee into a labeled passage' do 
+      chunk = Chunk.new @opening
+      chunk.add @line
+      lp = chunk.as_labeled_passage
+
+      expect(lp.label).to eq("_sad_end_")
+      expect(lp.to_choicescript).to eq(@choicescript)
+    end
+  end
+end
+
+
+RSpec.describe 'Story' do
+  let(:fn_twee_file) { File.read('spec/data/simple.twee' )}
+  let(:fn_cs_file) { File.read('spec/data/simple.txt' )}
+  
+  describe 'transform' do
+    it 'can convert a twee file to a single chapter' do
+      story = Story.new(fn_twee_file)
+      expect(story.to_choicescript).to eq(fn_cs_file)
+    end
+  end
 end

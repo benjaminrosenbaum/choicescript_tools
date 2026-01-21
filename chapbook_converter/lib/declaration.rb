@@ -1,3 +1,4 @@
+require 'clause'
 
 class Declaration
 	attr_reader :chapbook_expression
@@ -20,10 +21,12 @@ class Declaration
 			"*if (#{cond})\n  *set #{var} #{val}"
 		when /^([a-zA-Z0-9._]+)\s*\:\s*(.+)$/
 			(vr, vl) = [$1, $2]
-			puts "simple case: set #{vr} to #{vl}"
+			puts "simple case: set #{vr} to #{vl}" if @verbose
 			var = vr.gsub('.', '_')
 			val = Clause.new(vl, @verbose).to_choicescript
 			"*set #{var} #{val}"
+		when /^\s*$/
+			puts "whitespace, ignore" if @verbose
 		else
 			throw "Cannot parse chapbook declaration line: #{chapbook_expression}"
 		end

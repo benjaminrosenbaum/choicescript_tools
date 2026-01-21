@@ -1,3 +1,4 @@
+
 *label _begin
 *if collapsible
   *set foo 3
@@ -6,33 +7,18 @@
   Hello, world
   
   *choice
-    # be brave
+    #be brave
       *goto _happy_end
-    # be cowardly
-      *goto _sad_end
-  
+    #be cowardly
+      *goto _sad_end_
 *comment end of _begin
 
 *label _happy_end
 *if collapsible
-  
   Well isn't this nice.
-
 *comment end of _happy_end
 
-*label _happy_end
+*label _sad_end_
 *if collapsible
-  
-  Well isn't this nice.
-
-*comment end of _happy_end
-
-*label _sad_end
-*if collapsible
-  
   Not as nice. You are eaten by ${bar} grues.
-
-*comment end of _sad_end
-
-
-
+*comment end of _sad_end_
