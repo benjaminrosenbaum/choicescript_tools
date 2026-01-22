@@ -162,13 +162,13 @@ RSpec.describe 'Passage' do
     @story = Story.new ''
 
     @chpbk_passage = "foo: 3"       + "\n" +
-                     "bar: foo + 2" + "\n" +
+                     "bar.baz: foo + 2" + "\n" +
                      "--"           + "\n" +
-                     "Hello, {bar} worlds" 
+                     "Hello, {bar.baz} worlds" 
 
     @chsrpt_passage = "*set foo 3"       + "\n" +
-                      "*set bar foo + 2" + "\n" + "\n" +
-                      "Hello, ${bar} worlds" 
+                      "*set bar_baz foo + 2" + "\n" + "\n" +
+                      "Hello, ${bar_baz} worlds" 
 
     @chpbk_passage_simple_exit = @chpbk_passage               + "\n" +
                                  "[[That's It!->Page 2]] \n "+ "\n" 
@@ -188,12 +188,12 @@ RSpec.describe 'Passage' do
       expect(header.length).to eq(2)
       expect(header[0]).to eq("foo: 3" )
       expect(body.length).to eq(1)
-      expect(body[0]).to eq("Hello, {bar} worlds")
+      expect(body[0]).to eq("Hello, {bar.baz} worlds")
     end
 
     it 'can format a simple Chapbook passage as a Choicescript block' do 
       expect(Passage.new(@chpbk_passage, @story).to_choicescript).to eq(@chsrpt_passage)
-      expect(@story.variables).to include('foo' => '0', 'bar' => '0', 'collapsible' => 'true')
+      expect(@story.variables).to include('foo' => '0', 'bar_baz' => '0', 'collapsible' => 'true')
     end
 
     it 'can format a chapbook passage with a simple exit as a Choicescript block' do 
@@ -222,7 +222,20 @@ RSpec.describe 'Chunk' do
       expect(lp.label).to eq("_sad_end_")
       expect(lp.to_choicescript).to eq(@choicescript)
     end
+
+    it 'can handle raw CS overrides' do 
+      opn = ":: CS|Phew!"
+      ln = 'oof...'
+      cs = "\n*label _phew_\n*if collapsible\n  oof...\n*comment end of _phew_"
+
+      chunk = Chunk.new opn, @story
+      chunk.add ln
+      lp = chunk.as_labeled_passage
+      expect(lp.label).to eq('_phew_')
+      expect(lp.to_choicescript).to eq(cs)
+    end
   end
+
 end
 
 

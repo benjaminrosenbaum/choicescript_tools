@@ -4,9 +4,12 @@ require 'passage'
 class Chunk
 	attr_reader :title, :lines
 
-	def initialize opening, story
+	IGNORED_CHUNKS = %w{StoryData StoryScript StoryStylesheet}
+
+	def initialize opening, story, verbose=false
 		@story = story
 		@lines = []
+		@verbose = verbose
 		if opening =~ /^:: (.*) \{"position":"(\d+),(\d+)","size":"(\d+),(\d+)"}/
 			@label = Link.lablify $1.strip
 			# these may be useful later for determining chapters
@@ -21,12 +24,24 @@ class Chunk
 		end
 	end
 
+	def is_story_title
+		@title == 'StoryTitle'
+	end
+
+	def is_ignored
+		is_story_title || IGNORED_CHUNKS.any? {|w| @title.start_with? w}
+	end
+
 	def add line 
 		@lines.push line
 	end
 
-	def as_labeled_passage verbose=false
-		LabeledPassage.new @label, @lines, @story, verbose
+	def as_labeled_passage 
+		LabeledPassage.new @label, @lines, @story, @verbose, false
+	end
+
+	def as_labeled_passage_raw_choicescript 
+		LabeledPassage.new @label, @lines, @story, @verbose, true
 	end
 end
 
@@ -47,20 +62,37 @@ class Story
 			if line.start_with? '::'
 				puts "new chunk starting, #{chunk ? "finish #{chunk.title}" : 'first one'}" if @verbose
 				if chunk
-					if chunk.title == 'StoryTitle'
+					if chunk.is_story_title
 						puts "StoryTitle chunk contains: #{chunk.lines.first}" if @verbose
 						@title = chunk.lines.first.chomp
-					elsif chunk.title != 'StoryData'
+					end
+
+					unless chunk.is_ignored
 						@chunks.push chunk
 					end
 				end
-				chunk = Chunk.new line, self
+				chunk = Chunk.new line, self, @verbose
 			else
 				chunk.add line if chunk
 			end
 		end
+		
+		#last one
+		@chunks.push chunk if (chunk && !chunk.is_ignored)
 
-		@passages = @chunks.map{|c| c.as_labeled_passage @verbose}
+		@passages = @chunks.map do |c| 
+			puts "examining #{c.title}" if @verbose
+			unless c.title.start_with? "CS|" 
+				override = @chunks.find{|ovr| ovr.title == "CS|#{c.title}" }
+				if override
+					puts "found override #{override.title}" if @verbose
+					override.as_labeled_passage_raw_choicescript 
+			    else
+			    	puts "create passage for #{c.title}" if @verbose
+					c.as_labeled_passage
+				end
+			end
+		end.compact
 
 		puts "got story titled #{@title} with #{@passages.length} passages" if @verbose
 	end

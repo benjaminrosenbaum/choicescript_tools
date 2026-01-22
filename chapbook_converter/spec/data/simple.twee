@@ -30,13 +30,3 @@ Well isn't this nice.
 
 Not as nice. You are eaten by {bar} grues.
 
-:: Invalid
-
-This will be invalid
-
-> [[Happy End]]
-> [[Sad End!?]]
-> [[Begin]]
-
-See, it has a [[link->Sad End!?]] after the choices, so it's invalid.
-

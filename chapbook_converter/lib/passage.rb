@@ -6,7 +6,7 @@ class Passage
 
 	DELIMETER = '--'
 
-	def initialize(chapbook_lines, story, verbose = false)
+	def initialize(chapbook_lines, story, verbose = false, is_raw = false)
 		if chapbook_lines.is_a? Array
 			@chapbook_lines = chapbook_lines
 		elsif chapbook_lines.is_a? String
@@ -15,6 +15,7 @@ class Passage
 			throw "Can't parse #{chapbook_lines} as Twee"
 		end
 		@story = story
+		@is_raw = is_raw
 		@verbose = verbose
 	end
 
@@ -55,12 +56,27 @@ class Passage
 		[inverted.reverse - coda, coda]
 	end
 
+
 	def convert_body_line chapbook_body_line
-		chapbook_body_line.split(/\s/).map do |w|
-			# replace simple variables
-			rgx = /\{([^ \}]+)\}/
-			(rgx.match w) ? w.gsub(rgx, "${#{$1}}" ) : w
-		end.join(' ')
+		chapbook_body_line.gsub!(/\t/, '  ')
+
+		# Markdown heading lines become bold
+		if chapbook_body_line =~ /^\s*#+(.*)$/ && !@is_raw
+			puts "bold: #{$1} (#{$2}" if @verbose
+			chapbook_body_line = "[b]#{$1}[/b]" 
+		end
+
+		acl_rgx = /\{adv cycling link:\s*(.+),\s*choices:\s*\[\s*(.+)\s*\]\s*\}/
+		if acl_rgx.match(chapbook_body_line)
+			"\nChoices: #{$2}\n" +
+			"\n*input_text #{Link.variablize(Link.unquote $1)}"
+	    else
+			chapbook_body_line.split(/\s/).map do |w|
+				# replace simple variables
+				rgx = /\{([^ \}]+)\}/
+				(rgx.match w) ? w.gsub(rgx, "${#{$1.gsub('.', '_')}}" ) : w
+			end.join(' ')
+		end
 	end
 
 	def partitioned
@@ -104,14 +120,26 @@ class Passage
 end
 
 
+
+#class RawPassage 
+#	def initialize cs_text
+#		@cs_text = cs_text
+#	end
+#
+#	def to_choicescript
+#		@cs_text
+#	end
+#end
+
+
 class LabeledPassage
 	INDENT = 2
 
 	attr_reader :label
 
-	def initialize(label, chapbook_lines, story, verbose = false)
+	def initialize(label, chapbook_lines, story, verbose = false, is_raw = false)
 		@label = label
-		@passage = Passage.new chapbook_lines, story, verbose
+		@passage = Passage.new chapbook_lines, story, verbose, is_raw
 	end
 
 	def to_choicescript
@@ -120,3 +148,5 @@ class LabeledPassage
 		"*comment end of #{label}"
 	end
 end
+
+
