@@ -6,7 +6,7 @@ class Passage
 
 	DELIMETER = '--'
 
-	def initialize(chapbook_lines, verbose = false)
+	def initialize(chapbook_lines, story, verbose = false)
 		if chapbook_lines.is_a? Array
 			@chapbook_lines = chapbook_lines
 		elsif chapbook_lines.is_a? String
@@ -14,16 +14,17 @@ class Passage
 		else
 			throw "Can't parse #{chapbook_lines} as Twee"
 		end
+		@story = story
 		@verbose = verbose
 	end
 
 	def to_choicescript(indent = 0)
 
-		indented = -> (line) { (' ' * indent) + line }
+		indented = -> (line) { line ? line.lines.map{|l| (' ' * indent) + l.chomp }.join("\n") : '' 	}
 
 		(header, body) = partitioned
 
-		cs_header = header.map {|decl| Declaration.new(decl).to_choicescript }
+		cs_header = header.map {|decl| Declaration.new(decl, @story).to_choicescript }
 		cs_body = body.map{|b| convert_body_line b}
 
 		results = strip_empties(cs_header + [""] + cs_body)
@@ -108,9 +109,9 @@ class LabeledPassage
 
 	attr_reader :label
 
-	def initialize(label, chapbook_lines, verbose = false)
+	def initialize(label, chapbook_lines, story, verbose = false)
 		@label = label
-		@passage = Passage.new chapbook_lines, verbose
+		@passage = Passage.new chapbook_lines, story, verbose
 	end
 
 	def to_choicescript

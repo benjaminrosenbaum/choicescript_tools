@@ -1,11 +1,12 @@
 
 *label _begin
 *if collapsible
+
   *set foo 3
   *set bar foo + 2
-  
+
   Hello, world
-  
+
   *choice
     #be brave
       *goto _happy_end

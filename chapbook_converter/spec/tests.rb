@@ -30,7 +30,6 @@ RSpec.describe 'Clause' do
       expect(Clause.new(expr).tokenized).to eq(tokens)
     end
 
-
     it "can respect apostrophes when tokenizing" do
       expr = "It's not like that at all"
       tokens = %w{It's not like that at all}
@@ -89,6 +88,14 @@ RSpec.describe 'Clause' do
       expect(clause.to_choicescript).to eq(chsrpt)
     end
 
+    it "can convert an empty string to Choicescript" do
+      chpbk = %Q{''}
+      chsrpt = %Q{""}
+      clause = Clause.new(chpbk)
+      expect(clause.to_choicescript).to eq(chsrpt)
+    end
+
+
     it "successfully handles quoted special characters" do
       chpbk =  %q{delimiter == '.' || greeting = '"Hello there, Timmy."' || foo = 'a && b'}
       chsrpt = %q{delimiter = "." or greeting = ""Hello there, Timmy."" or foo = "a && b"} 
@@ -100,36 +107,51 @@ RSpec.describe 'Clause' do
 end
 
 RSpec.describe 'Declaration' do
+
+  before do 
+    @story = Story.new ''
+
+    @check_var = -> (dt, dd) {
+      expect(@story.variables.keys.length).to eq(2)
+      expect(@story.variables['collapsible']).to eq('true')
+      expect(@story.variables[dt]).to eq(dd), "#{dt} should be created with #{dd} as default value but got #{@story.variables}"
+    }
+  end
+
   describe 'setting variables' do
     it 'can set a simple numeric variable' do
       chpbk =  %q{strength: 18}
       chsrpt = %q{*set strength 18}
-      expect(Declaration.new(chpbk).to_choicescript).to eq(chsrpt)
+      expect(Declaration.new(chpbk, @story).to_choicescript).to eq(chsrpt)
+      @check_var.('strength', '0')
     end
 
     it 'can set a simple string variable' do
       chpbk =  %q{name: 'foo'}
       chsrpt = %q{*set name "foo"}
-      expect(Declaration.new(chpbk).to_choicescript).to eq(chsrpt)
+      expect(Declaration.new(chpbk, @story).to_choicescript).to eq(chsrpt)
+      @check_var.('name', '""')
     end
 
     it 'can set a simple boolean variable' do
       chpbk =  %q{is_wizard: true}
       chsrpt = %q{*set is_wizard true}
-      expect(Declaration.new(chpbk).to_choicescript).to eq(chsrpt)
+      expect(Declaration.new(chpbk, @story).to_choicescript).to eq(chsrpt)
+      @check_var.('is_wizard', 'false')
     end
 
     it 'can set a variable to a formula' do
       chpbk =  %q{is_wizard: has_pointy_hat && spells_known > 0}
       chsrpt = %q{*set is_wizard has_pointy_hat and spells_known > 0}
-      expect(Declaration.new(chpbk).to_choicescript).to eq(chsrpt)
+      expect(Declaration.new(chpbk, @story).to_choicescript).to eq(chsrpt)
+      @check_var.('is_wizard', 'false')
     end
 
     it 'can conditionally set a variable to a formula' do
       chpbk =  %q{is_wizard  (has_pointy_hat && spells_known > 0 ): true}
       chsrpt = "*if (has_pointy_hat and spells_known > 0)\n" +
                "  *set is_wizard true"
-      expect(Declaration.new(chpbk).to_choicescript).to eq(chsrpt)
+      expect(Declaration.new(chpbk, @story).to_choicescript).to eq(chsrpt)
     end
   end
 end
@@ -137,6 +159,8 @@ end
 RSpec.describe 'Passage' do 
 
   before do
+    @story = Story.new ''
+
     @chpbk_passage = "foo: 3"       + "\n" +
                      "bar: foo + 2" + "\n" +
                      "--"           + "\n" +
@@ -159,7 +183,7 @@ RSpec.describe 'Passage' do
   describe 'conversion' do
 
     it 'can partition the chapbook passage into header and body' do
-      (header, body) = Passage.new(@chpbk_passage).partitioned
+      (header, body) = Passage.new(@chpbk_passage, @story).partitioned
 
       expect(header.length).to eq(2)
       expect(header[0]).to eq("foo: 3" )
@@ -168,11 +192,12 @@ RSpec.describe 'Passage' do
     end
 
     it 'can format a simple Chapbook passage as a Choicescript block' do 
-      expect(Passage.new(@chpbk_passage).to_choicescript).to eq(@chsrpt_passage)
+      expect(Passage.new(@chpbk_passage, @story).to_choicescript).to eq(@chsrpt_passage)
+      expect(@story.variables).to include('foo' => '0', 'bar' => '0', 'collapsible' => 'true')
     end
 
     it 'can format a chapbook passage with a simple exit as a Choicescript block' do 
-      expect(Passage.new(@chpbk_passage_simple_exit).to_choicescript).to eq(@chsrpt_passage_simple_exit)
+      expect(Passage.new(@chpbk_passage_simple_exit, @story).to_choicescript).to eq(@chsrpt_passage_simple_exit)
     end
   end
 end
@@ -180,6 +205,8 @@ end
 
 RSpec.describe 'Chunk' do 
   before do
+    @story = Story.new ''
+
     @opening = ":: Sad End!? {\"position\":\"825,50\",\"size\":\"100,100\"}"
     @line = "Not as nice. You are eaten by {bar} grues."
 
@@ -188,7 +215,7 @@ RSpec.describe 'Chunk' do
 
   describe 'conversion' do
     it 'can turn a chunk of twee into a labeled passage' do 
-      chunk = Chunk.new @opening
+      chunk = Chunk.new @opening, @story
       chunk.add @line
       lp = chunk.as_labeled_passage
 
@@ -202,11 +229,19 @@ end
 RSpec.describe 'Story' do
   let(:fn_twee_file) { File.read('spec/data/simple.twee' )}
   let(:fn_cs_file) { File.read('spec/data/simple.txt' )}
+
+  before do
+    @story = Story.new(fn_twee_file)
+  end
   
   describe 'transform' do
     it 'can convert a twee file to a single chapter' do
-      story = Story.new(fn_twee_file)
-      expect(story.to_choicescript).to eq(fn_cs_file)
+      expect(@story.to_choicescript).to eq(fn_cs_file)
+    end
+
+    it 'knows the title' do 
+      expect(@story.title).to eq('Simple')
     end
   end
+
 end

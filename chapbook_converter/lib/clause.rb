@@ -17,7 +17,7 @@ class Clause
 
 	def to_choicescript 
 		tokenized.map do |token|
-			if token =~ /^'(.+)'([^']*)$/
+			if token =~ /^'(.*)'([^']*)$/
 				puts "found '#{$1}'#{$2}, converting to \"#{$1}\"#{$2}" if @verbose
 				"\"#{$1}\"#{$2}"
 			elsif token =~ /".*"/
